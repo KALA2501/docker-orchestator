@@ -1,8 +1,9 @@
+version: "3.8"
 
 services:
   discovery-service:
     build:
-      context: https://github.com/KALA2501/EurekaServer
+      context: ./discovery-service  # Use the Dockerfile in the discovery-service directory
     container_name: discovery-service
     ports:
       - "8761:8761"
@@ -18,12 +19,12 @@ services:
 
   config-server:
     build:
-      context: https://github.com/KALA2501/GatewayServer
+      context: ./config-server  # Use the Dockerfile in the config-server directory
     container_name: config-server
     ports:
       - "8888:8888"
     depends_on:
-      - discovery-service  # Config Server depende de Discovery Service
+      - discovery-service
     networks:
       - kala-network
     environment:
@@ -36,13 +37,13 @@ services:
 
   api-gateway:
     build:
-      context: https://github.com/KALA2501/GatewayServer
+      context: ./api-gateway  # Use the Dockerfile in the api-gateway directory
     container_name: api-gateway
     ports:
       - "8080:8080"
     depends_on:
       - config-server
-      - discovery-service  # API Gateway depende de ambos Discovery Service y Config Server
+      - discovery-service
     networks:
       - kala-network
     environment:
@@ -55,13 +56,13 @@ services:
 
   usuarios-service:
     build:
-      context: https://github.com/KALA2501/MicroservicioUsuarios
+      context: ./usuarios-service  # Use the Dockerfile in the usuarios-service directory
     container_name: usuarios-service
     ports:
       - "9091:9091"
     depends_on:
       - config-server
-      - discovery-service  # Usuarios Service depende de Discovery Service y Config Server
+      - discovery-service
     networks:
       - kala-network
     environment:
@@ -74,19 +75,19 @@ services:
 
   frontend:
     build:
-      context: https://github.com/KALA2501/kala-frontend  # El path de tu Dockerfile para el frontend React
+      context: ./frontend  # Use the Dockerfile in the frontend directory
     container_name: frontend
     ports:
-      - "3000:3000"  # Mapeo del puerto del contenedor al puerto 3000 en el host
+      - "3000:3000"
     depends_on:
       - api-gateway
       - discovery-service
-      - config-server  # El frontend depende de los tres
+      - config-server
     networks:
       - kala-network
     restart: always
     environment:
-      - REACT_APP_API_URL=http://api-gateway:8080  # Configura la URL de la API para React
+      - REACT_APP_API_URL=http://api-gateway:8080
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
