@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  discovery-service:
+    build:
+      context: https://github.com/KALA2501/EurekaServer
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    networks:
+      - kala-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    restart: always
+    depends_on:
+      - config-server
+
+  config-server:
+    build:
+      context: https://github.com/KALA2501/GatewayServer
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    depends_on:
+      - discovery-service
+    networks:
+      - kala-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    restart: always
+
+  api-gateway:
+    build:
+      context: https://github.com/KALA2501/GatewayServer
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - config-server
+      - discovery-service
+    networks:
+      - kala-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    restart: always
+
+  usuarios-service:
+    external: true
+    container_name: usuarios-service
+    ports:
+      - "9091:9091"
+    depends_on:
+      - config-server
+      - discovery-service
+    networks:
+      - kala-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    restart: always
+
+networks:
+  kala-network:
+    driver: bridge
