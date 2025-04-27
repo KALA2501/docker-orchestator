@@ -45,12 +45,16 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - config-server
-      - discovery-service
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
     networks:
       - kala-network
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
@@ -70,6 +74,8 @@ services:
       - kala-network
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9091/actuator/health"]
