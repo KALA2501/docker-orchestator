@@ -93,7 +93,6 @@ services:
     networks:
       - kala-network
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
     restart: always
