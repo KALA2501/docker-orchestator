@@ -46,7 +46,7 @@ services:
     networks:
       - kala-network
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=git
       - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/KALA2501/Archivos-config.git
       - SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT_LABEL=main
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
