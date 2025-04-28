@@ -18,6 +18,7 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 30s
       retries: 3
+      start_period: 30s
 
   discovery-service:
     build:
@@ -87,14 +88,20 @@ services:
     ports:
       - "9091:9091"
     depends_on:
-      - config-server
-      - discovery-service
-      - mysql
-      - api-gateway
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      discovery-service:
+        condition: service_healthy
+      api-gateway:
+        condition: service_healthy
     networks:
       - kala-network
     environment:
-      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CLOUD_CONFIG_ENABLED=true
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
     restart: always
     healthcheck:
@@ -112,6 +119,8 @@ services:
       - api-gateway
       - discovery-service
       - config-server
+      - mysql
+      - usuarios-service
     networks:
       - kala-network
     restart: always
