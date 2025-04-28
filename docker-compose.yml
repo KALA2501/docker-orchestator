@@ -90,6 +90,7 @@ services:
       - config-server
       - discovery-service
       - mysql
+      - api-gateway
     networks:
       - kala-network
     environment:
