@@ -5,8 +5,8 @@ FROM node:18 AS build
 # Definir el directorio de trabajo
 WORKDIR /app
 
-# Clonar el repositorio y cambiar a la rama 'Luisa'
-RUN git clone -b Luisa https://github.com/KALA2501/kala-frontend.git .
+# Clonar el repositorio
+RUN git clone https://github.com/KALA2501/kala-frontend.git .
 
 # Copiar los archivos package.json y package-lock.json
 COPY package*.json ./
