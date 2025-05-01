@@ -114,13 +114,12 @@ services:
       retries: 5
       start_period: 30s
 
-
   frontend:
     build:
       context: ./frontend
     container_name: frontend
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
       - api-gateway
       - discovery-service

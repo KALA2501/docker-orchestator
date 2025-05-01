@@ -1,31 +1,23 @@
-# Etapa 1: Build
-# Usa una imagen base de Node.js para crear el proyecto
+# Stage 1: Build
 FROM node:18 AS build
 
-# Definir el directorio de trabajo
 WORKDIR /app
 
-# Clonar el repositorio
+# Clone the frontend repo
 RUN git clone https://github.com/KALA2501/kala-frontend.git .
 
-# Copiar los archivos package.json y package-lock.json
-COPY package*.json ./
-
-# Instalar las dependencias del proyecto
+# Install dependencies and build
 RUN npm install
-
-# Crear el build del proyecto React (construir la aplicación para producción)
 RUN npm run build
 
-# Etapa 2: Servir la aplicación
-# Usamos una imagen de Nginx para servir la aplicación ya construida
+# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Copiar el contenido de la carpeta build generada en la etapa anterior al directorio de Nginx
+# Copy the built files to Nginx public dir
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Exponer el puerto 3000
-EXPOSE 3000
+# Expose default Nginx port (80)
+EXPOSE 80
 
-# Ejecutar Nginx en primer plano para servir el contenido
+# Run Nginx
 CMD ["nginx", "-g", "daemon off;"]
