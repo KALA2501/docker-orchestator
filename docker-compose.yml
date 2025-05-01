@@ -96,19 +96,13 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-      config-server:
-        condition: service_healthy
       discovery-service:
-        condition: service_healthy
-      api-gateway:
         condition: service_healthy
     networks:
       - kala-network
     environment:
       - SPRING_APPLICATION_NAME=usuarios-service
       - SPRING_PROFILES_ACTIVE=default
-      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
-      - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/kala
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=admin
@@ -118,7 +112,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 90s
+      start_period: 30s
+
 
   frontend:
     build:
