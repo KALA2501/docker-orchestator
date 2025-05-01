@@ -1,23 +1,20 @@
-# Etapa 1: Build
+# Stage 1: Build
 FROM maven:3.9.4-eclipse-temurin-21 AS build
-
 WORKDIR /app
 
-# Clone the repository from GitHub
-RUN git clone https://github.com/KALA2501/MicroservicioUsuarios .
+# Clone the project
+RUN git clone --single-branch --branch main https://github.com/KALA2501/MicroservicioUsuarios.git
 
-# Build the project
-RUN mvn dependency:go-offline
+# Move into the actual project directory
+WORKDIR /app/MicroservicioUsuarios
+
+# Build the jar
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Run
+# Stage 2: Run
 FROM eclipse-temurin:21-jdk-jammy
-
 WORKDIR /app
-
-# Copy the .jar built from the previous stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/MicroservicioUsuarios/target/*.jar app.jar
 
 EXPOSE 9091
-
 ENTRYPOINT ["java", "-jar", "app.jar"]

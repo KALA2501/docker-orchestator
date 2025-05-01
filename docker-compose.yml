@@ -23,7 +23,7 @@ services:
 
   discovery-service:
     build:
-      context: ./discovery-service  # Use the Dockerfile in the discovery-service directory
+      context: ./discovery-service
     container_name: discovery-service
     ports:
       - "8761:8761"
@@ -35,16 +35,18 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
       interval: 30s
-      retries: 3
+      retries: 5
+      start_period: 20s
 
   config-server:
     build:
-      context: ./config-server  # Use the Dockerfile in the config-server directory
+      context: ./config-server
     container_name: config-server
     ports:
       - "8888:8888"
     depends_on:
-      - discovery-service
+      discovery-service:
+        condition: service_healthy
     networks:
       - kala-network
     environment:
@@ -56,11 +58,13 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
       interval: 30s
-      retries: 3
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   api-gateway:
     build:
-      context: ./api-gateway  # Use the Dockerfile in the api-gateway directory
+      context: ./api-gateway
     container_name: api-gateway
     ports:
       - "8080:8080"
@@ -80,14 +84,16 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
-      retries: 3
+      retries: 5
+      start_period: 30s
 
   usuarios-service:
     build:
-      context: ./usuarios-service  # Use the Dockerfile in the usuarios-service directory
+      context: ./usuarios-service
     container_name: usuarios-service
     ports:
       - "9091:9091"
+    entrypoint: ["/app/entrypoint.sh"]
     depends_on:
       mysql:
         condition: service_healthy
@@ -100,10 +106,10 @@ services:
     networks:
       - kala-network
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_CLOUD_CONFIG_ENABLED=true
+      - SPRING_APPLICATION_NAME=usuarios-service
+      - SPRING_PROFILES_ACTIVE=default
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
       - SPRING_CLOUD_CONFIG_URI=http://config-server:8888
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/kala
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=admin
@@ -113,11 +119,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 90s  # <-- Súbelo para esperar bien que MySQL esté listo
+      start_period: 90s
 
   frontend:
     build:
-      context: ./frontend  # Use the Dockerfile in the frontend directory
+      context: ./frontend
     container_name: frontend
     ports:
       - "3000:3000"
