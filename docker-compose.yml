@@ -93,7 +93,6 @@ services:
     container_name: usuarios-service
     ports:
       - "9091:9091"
-    entrypoint: ["/app/entrypoint.sh"]
     depends_on:
       mysql:
         condition: service_healthy
