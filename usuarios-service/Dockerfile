@@ -1,20 +1,16 @@
-# Stage 1: Build
-FROM maven:3.9.4-eclipse-temurin-21 AS build
+FROM maven:3.9.4-eclipse-temurin-21
+
+# Directorio de trabajo
 WORKDIR /app
 
-# Clone the project
+# Clona el repositorio directamente
 RUN git clone --single-branch --branch main https://github.com/KALA2501/MicroservicioUsuarios.git
 
-# Move into the actual project directory
+# Entra a la carpeta del microservicio
 WORKDIR /app/MicroservicioUsuarios
 
-# Build the jar
-RUN mvn clean package -DskipTests
-
-# Stage 2: Run
-FROM eclipse-temurin:21-jdk-jammy
-WORKDIR /app
-COPY --from=build /app/MicroservicioUsuarios/target/*.jar app.jar
-
+# Expone el puerto del microservicio
 EXPOSE 9091
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Ejecuta el microservicio usando Maven directamente
+CMD ["mvn", "spring-boot:run"]
