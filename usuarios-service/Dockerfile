@@ -14,16 +14,7 @@ RUN mvn clean package -DskipTests
 # Stage 2: Run
 FROM eclipse-temurin:21-jdk-jammy
 WORKDIR /app
-
-# Copiar el jar
 COPY --from=build /app/MicroservicioUsuarios/target/*.jar app.jar
 
-# Copiar el entrypoint
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-
-# Exponer el puerto
 EXPOSE 9091
-
-# Usar el entrypoint personalizado
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
