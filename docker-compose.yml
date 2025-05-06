@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   mysql:
     image: mysql:8.0
@@ -13,14 +12,14 @@ services:
       MYSQL_DATABASE: kala
     restart: always
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql      
+      - ./mysql-init/kala.sql:/docker-entrypoint-initdb.d/kala.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 60s
-
   discovery-service:
     build:
       context: ./discovery-service
