@@ -75,7 +75,7 @@ CREATE TABLE paciente (
     pk_id VARCHAR(50) PRIMARY KEY,
     fk_id_centro_medico BIGINT,
     fk_id_tipo_documento VARCHAR(50),
-    fk_contacto_emergencia BIGINT UNIQUE NOT NULL,
+    fk_contacto_emergencia BIGINT NOT NULL,
     nombre VARCHAR(255),
     apellido VARCHAR(255),
     id_documento VARCHAR(100) NOT NULL UNIQUE,
