@@ -33,6 +33,13 @@ CREATE TABLE tipo_documento (
     tipo VARCHAR(100)
 );
 
+INSERT IGNORE INTO tipo_documento (id, tipo) VALUES
+('CC', 'Cédula de Ciudadanía'),
+('TI', 'Tarjeta de Identidad'),
+('CE', 'Cédula de Extranjería'),
+('PASAPORTE', 'Pasaporte'),
+('PEP', 'Permiso Especial de Permanencia');
+
 CREATE TABLE contacto_emergencia (
     pk_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255),
@@ -77,7 +84,7 @@ CREATE TABLE paciente (
     telefono VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(255),
     direccion VARCHAR(255),
-    etapa VARCHAR(100),
+    etapa INT,
     zona VARCHAR(100),
     distrito VARCHAR(100),
     genero VARCHAR(50),
@@ -88,20 +95,29 @@ CREATE TABLE paciente (
     CONSTRAINT fk_contacto_emergencia_paciente FOREIGN KEY (fk_contacto_emergencia) REFERENCES contacto_emergencia(pk_id)
 );
 
+
 CREATE TABLE solicitud_centro_medico (
     pk_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
+    nombre VARCHAR(255),
     telefono VARCHAR(100),
     direccion VARCHAR(255),
-    correo VARCHAR(255) NOT NULL UNIQUE,
+    correo VARCHAR(255),
     url_logo VARCHAR(255),
-    estado_solicitud ENUM('PENDIENTE', 'ACEPTADA', 'RECHAZADA') DEFAULT 'PENDIENTE'
+    estado_solicitud ENUM('PENDIENTE', 'ACEPTADA', 'RECHAZADA') DEFAULT 'PENDIENTE',
+    procesado BOOLEAN NOT NULL DEFAULT FALSE
 );
+
 
 CREATE TABLE tipo_vinculacion (
     id VARCHAR(50) PRIMARY KEY,
+    tipo VARCHAR(100),
     descripcion VARCHAR(255)
 );
+
+INSERT IGNORE INTO tipo_vinculacion (id, tipo, descripcion) VALUES
+('TV01', 'MEDICO', 'Vinculación con médico'),
+('TV02', 'PACIENTE', 'Vinculación con paciente');
+
 
 CREATE TABLE vinculacion (
     fk_id_medico VARCHAR(255),
