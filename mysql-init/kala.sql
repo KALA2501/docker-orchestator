@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS lawton_brody;
 DROP TABLE IF EXISTS faq;
 DROP TABLE IF EXISTS dad;  
 DROP TABLE IF EXISTS uso_cubiertos;
+DROP TABLE IF EXISTS metricas_identificacion_dinero;
 
 CREATE TABLE admin (
     pk_id VARCHAR(255) PRIMARY KEY,
@@ -243,4 +244,34 @@ CREATE TABLE uso_cubiertos (
     
     FOREIGN KEY (paciente_id) REFERENCES paciente(pk_id)
 );
+
+CREATE TABLE metricas_identificacion_dinero (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    paciente_id VARCHAR(50) NOT NULL,
+    tiempo_actividad FLOAT,
+    errores_totales INT,
+    errores_100 INT,
+    tiempo_100 FLOAT,
+    errores_200 INT,
+    tiempo_200 FLOAT,
+    errores_500 INT,
+    tiempo_500 FLOAT,
+    errores_1000 INT,
+    tiempo_1000 FLOAT,
+    errores_2mil INT,
+    tiempo_2mil FLOAT,
+    errores_5mil INT,
+    tiempo_5mil FLOAT,
+    errores_10mil INT,
+    tiempo_10mil FLOAT,
+    errores_20mil INT,
+    tiempo_20mil FLOAT,
+    errores_50mil INT,
+    tiempo_50mil FLOAT,
+    errores_100mil INT,
+    tiempo_100mil FLOAT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_paciente_metricas_dinero FOREIGN KEY (paciente_id) REFERENCES paciente(pk_id)
+);
+
 
