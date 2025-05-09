@@ -58,7 +58,7 @@ CREATE TABLE medico (
     apellido VARCHAR(255),
     fk_id_tipo_documento VARCHAR(50),
     id_documento VARCHAR(100) NOT NULL UNIQUE,
-    fecha_nacimiento TIMESTAMP,
+    fecha_nacimiento DATETIME,
     profesion VARCHAR(255),
     especialidad VARCHAR(255),
     telefono VARCHAR(100) NOT NULL UNIQUE,
@@ -80,7 +80,7 @@ CREATE TABLE paciente (
     nombre VARCHAR(255),
     apellido VARCHAR(255),
     id_documento VARCHAR(100) NOT NULL UNIQUE,
-    fecha_nacimiento TIMESTAMP,
+    fecha_nacimiento DATETIME,
     codigo_cie INT,
     telefono VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(255),
@@ -122,7 +122,7 @@ CREATE TABLE vinculacion (
     fk_id_medico VARCHAR(255),
     fk_id_paciente VARCHAR(50),
     fk_id_tipo_vinculacion VARCHAR(50),
-    fecha_vinculacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_vinculacion DATETIME,
     
     PRIMARY KEY (fk_id_medico, fk_id_paciente, fk_id_tipo_vinculacion),
 
@@ -145,7 +145,7 @@ CREATE TABLE lawton_brody (
     manejo_medicacion TINYINT COMMENT '0 = Dependiente en manejo de medicación; 1 = Independiente en manejo de medicación',
     manejo_finanzas TINYINT COMMENT '0 = Dependiente en manejo de finanzas; 1 = Independiente en manejo de finanzas',
 
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_registro DATETIME,
     observaciones TEXT,
 
     FOREIGN KEY (paciente_id) REFERENCES paciente(pk_id),
@@ -168,7 +168,7 @@ CREATE TABLE faq (
     desplazarse_fuera_casa TINYINT,
     responder_emergencias TINYINT COMMENT 'Responde con juicio ante emergencias',
 
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_registro DATETIME,
     observaciones TEXT,
 
     FOREIGN KEY (paciente_id) REFERENCES paciente(pk_id),
@@ -227,7 +227,7 @@ CREATE TABLE dad (
 
     -- Resultado agregado
     porcentaje_independencia DECIMAL(5,2),
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_registro DATETIME,
     observaciones TEXT,
 
     FOREIGN KEY (paciente_id) REFERENCES paciente(pk_id),
