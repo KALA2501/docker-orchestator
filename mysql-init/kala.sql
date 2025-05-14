@@ -274,4 +274,32 @@ CREATE TABLE metricas_identificacion_dinero (
     CONSTRAINT fk_paciente_metricas_dinero FOREIGN KEY (paciente_id) REFERENCES paciente(pk_id)
 );
 
+CREATE TABLE cajero_actividad (
+    user_id VARCHAR(100),
+    session_timestamp DATETIME,
 
+    interaction_1_time FLOAT,
+    interaction_1_correct_change BOOLEAN,
+    interaction_1_delta_change INT,
+    interaction_1_identified_well BOOLEAN,
+
+    interaction_2_time FLOAT,
+    interaction_2_correct_change BOOLEAN,
+    interaction_2_delta_change INT,
+    interaction_2_identified_well BOOLEAN,
+
+    interaction_3_time FLOAT,
+    interaction_3_correct_change BOOLEAN,
+    interaction_3_delta_change INT,
+    interaction_3_identified_well BOOLEAN,
+
+    interaction_4_time FLOAT,
+    interaction_4_correct_change BOOLEAN,
+    interaction_4_delta_change INT,
+    interaction_4_identified_well BOOLEAN,
+
+    interaction_5_time FLOAT,
+    interaction_5_correct_change BOOLEAN,
+    interaction_5_delta_change INT,
+    interaction_5_identified_well BOOLEAN
+);
