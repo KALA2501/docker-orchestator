@@ -303,3 +303,16 @@ CREATE TABLE cajero_actividad (
     interaction_5_delta_change INT,
     interaction_5_identified_well BOOLEAN
 );
+
+CREATE TABLE metricas_mercado (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user VARCHAR(255) NOT NULL,
+    totalActivityDuration FLOAT NOT NULL,
+    listViewCount INT NOT NULL,
+    totalListLookTime FLOAT NOT NULL,
+    correctItemsCount INT NOT NULL,
+    incorrectItemsCount INT NOT NULL,
+    totalQuantityOffBy INT NOT NULL,
+    totalIncorrectQuantity INT NOT NULL,
+    timestamp DATETIME NOT NULL
+);
