@@ -316,3 +316,197 @@ CREATE TABLE metricas_mercado (
     totalIncorrectQuantity INT NOT NULL,
     timestamp DATETIME NOT NULL
 );
+
+CREATE TABLE metricas_cubiertos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(100) NOT NULL,
+    tiempo DECIMAL(10,4) NOT NULL,
+    puntaje INT NOT NULL,
+    errores INT NOT NULL,
+    plato_error VARCHAR(100),
+    cubierto_dificil VARCHAR(100),
+
+    -- Errores por cubierto
+    cuchillo_errores INT DEFAULT 0,
+    cuchara_errores INT DEFAULT 0,
+    tenedor_errores INT DEFAULT 0,
+
+    -- Errores por plato
+    cake_errores INT DEFAULT 0,
+    frijoles_errores INT DEFAULT 0,
+    hotdog_errores INT DEFAULT 0,
+    pizza_errores INT DEFAULT 0,
+    salmoncut_errores INT DEFAULT 0,
+    sopa_errores INT DEFAULT 0,
+    ramen_errores INT DEFAULT 0,
+
+    created_at DATETIME NOT NULL
+);
+
+CREATE OR REPLACE VIEW vista_duracion_promedio_mercado AS
+SELECT 
+    user AS paciente_id,
+    ROUND(AVG(totalActivityDuration), 2) AS duracion_promedio
+FROM metricas_mercado
+GROUP BY user;
+
+
+CREATE OR REPLACE VIEW vista_consultas_lista_mercado AS
+SELECT 
+    user AS paciente_id,
+    ROUND(AVG(listViewCount), 2) AS promedio_consultas_lista
+FROM metricas_mercado
+GROUP BY user;
+
+CREATE OR REPLACE VIEW vista_precision_items_mercado AS
+SELECT 
+    user AS paciente_id,
+    SUM(correctItemsCount) AS total_correctos,
+    SUM(incorrectItemsCount) AS total_incorrectos
+FROM metricas_mercado
+GROUP BY user;
+
+CREATE OR REPLACE VIEW vista_errores_cantidad_mercado AS
+SELECT 
+    user AS paciente_id,
+    ROUND(AVG(totalQuantityOffBy), 2) AS promedio_desviacion,
+    ROUND(AVG(totalIncorrectQuantity), 2) AS cantidad_incorrecta_prom
+FROM metricas_mercado
+GROUP BY user;
+
+CREATE OR REPLACE VIEW vista_tiempo_lista_mercado AS
+SELECT 
+    user AS paciente_id,
+    ROUND(AVG(totalListLookTime), 2) AS tiempo_promedio_lista
+FROM metricas_mercado
+GROUP BY user;
+
+CREATE OR REPLACE VIEW devolucion_cambio AS
+SELECT user_id AS paciente_id, 500 AS monto_entregado, interaction_1_correct_change AS correcto
+FROM cajero_actividad
+UNION ALL
+SELECT user_id, 1000, interaction_2_correct_change
+FROM cajero_actividad
+UNION ALL
+SELECT user_id, 2000, interaction_3_correct_change
+FROM cajero_actividad
+UNION ALL
+SELECT user_id, 5000, interaction_4_correct_change
+FROM cajero_actividad
+UNION ALL
+SELECT user_id, 10000, interaction_5_correct_change
+FROM cajero_actividad;
+
+CREATE OR REPLACE VIEW vista_tiempos_promedio_ident_moneda AS
+SELECT user_id AS paciente_id, 500 AS denominacion, ROUND(AVG(interaction_1_time), 2) AS promedio_tiempo
+FROM cajero_actividad
+GROUP BY user_id
+UNION ALL
+SELECT user_id, 1000, ROUND(AVG(interaction_2_time), 2)
+FROM cajero_actividad
+GROUP BY user_id
+UNION ALL
+SELECT user_id, 2000, ROUND(AVG(interaction_3_time), 2)
+FROM cajero_actividad
+GROUP BY user_id
+UNION ALL
+SELECT user_id, 5000, ROUND(AVG(interaction_4_time), 2)
+FROM cajero_actividad
+GROUP BY user_id
+UNION ALL
+SELECT user_id, 10000, ROUND(AVG(interaction_5_time), 2)
+FROM cajero_actividad
+GROUP BY user_id;
+
+CREATE OR REPLACE VIEW vista_errores_promedio_ident_moneda AS
+SELECT user_id AS paciente_id, 500 AS denominacion, ROUND(AVG(ABS(interaction_1_delta_change)), 2) AS promedio_errores
+FROM cajero_actividad
+GROUP BY user_id
+UNION ALL
+SELECT user_id, 1000, ROUND(AVG(ABS(interaction_2_delta_change)), 2)
+FROM cajero_actividad
+GROUP BY user_id
+UNION ALL
+SELECT user_id, 2000, ROUND(AVG(ABS(interaction_3_delta_change)), 2)
+FROM cajero_actividad
+GROUP BY user_id
+UNION ALL
+SELECT user_id, 5000, ROUND(AVG(ABS(interaction_4_delta_change)), 2)
+FROM cajero_actividad
+GROUP BY user_id
+UNION ALL
+SELECT user_id, 10000, ROUND(AVG(ABS(interaction_5_delta_change)), 2)
+FROM cajero_actividad
+GROUP BY user_id;
+
+CREATE OR REPLACE VIEW vista_historial_actividades_mercado AS
+SELECT 
+  user AS paciente_id,
+  DATE(timestamp) AS fecha,
+  COUNT(*) AS cantidad
+FROM metricas_mercado
+GROUP BY user, DATE(timestamp)
+ORDER BY fecha;
+
+CREATE OR REPLACE VIEW vista_evolucion_tiempo_mercado AS
+SELECT 
+  user AS paciente_id,
+  timestamp,
+  totalActivityDuration AS duracion
+FROM metricas_mercado;
+
+CREATE OR REPLACE VIEW vista_precision_sesiones_mercado AS
+SELECT 
+  user AS paciente_id,
+  timestamp,
+  correctItemsCount,
+  incorrectItemsCount
+FROM metricas_mercado;
+
+CREATE OR REPLACE VIEW vista_tiempo_promedio_cubiertos AS
+SELECT 
+  user_id AS paciente_id,
+  DATE(created_at) AS fecha,
+  ROUND(AVG(tiempo), 2) AS tiempo_promedio
+FROM metricas_cubiertos
+GROUP BY user_id, DATE(created_at);
+
+CREATE OR REPLACE VIEW vista_errores_sesion_cubiertos AS
+SELECT 
+  user_id AS paciente_id,
+  DATE(created_at) AS fecha,
+  SUM(errores) AS errores_totales
+FROM metricas_cubiertos
+GROUP BY user_id, DATE(created_at);
+
+CREATE OR REPLACE VIEW vista_errores_por_cubierto AS
+SELECT 
+  user_id AS paciente_id,
+  SUM(cuchillo_errores) AS cuchillo,
+  SUM(cuchara_errores) AS cuchara,
+  SUM(tenedor_errores) AS tenedor
+FROM metricas_cubiertos
+GROUP BY user_id;
+
+CREATE OR REPLACE VIEW vista_errores_por_plato AS
+SELECT 
+  user_id AS paciente_id,
+  SUM(cake_errores) AS cake,
+  SUM(frijoles_errores) AS frijoles,
+  SUM(hotdog_errores) AS hotdog,
+  SUM(pizza_errores) AS pizza,
+  SUM(salmoncut_errores) AS salmoncut,
+  SUM(sopa_errores) AS sopa,
+  SUM(ramen_errores) AS ramen
+FROM metricas_cubiertos
+GROUP BY user_id;
+
+CREATE OR REPLACE VIEW vista_desempeno_cubiertos AS
+SELECT 
+  user_id AS paciente_id,
+  DATE(created_at) AS fecha,
+  ROUND(AVG(tiempo), 2) AS tiempo_promedio,
+  ROUND(AVG(puntaje), 2) AS puntaje_promedio,
+  SUM(errores) AS errores_totales
+FROM metricas_cubiertos
+GROUP BY user_id, DATE(created_at);
