@@ -147,22 +147,18 @@ services:
   kafka:
     build:
       context: ./kafka
-      # No need to specify `dockerfile:` if the name is just "Dockerfile"
     container_name: kafka
-    depends_on:
-      - zookeeper
-    networks:
-      - kala-network
     ports:
       - "8088:8088"
       - "8089:8089"
+    networks:
+      - kala-network
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:8088,PRODUCER://host.docker.internal:8089
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:8088,PRODUCER://kafka:8089
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:8088,PRODUCER://0.0.0.0:8089
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PRODUCER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
     restart: always
-
 
   notification-service:
     build:
